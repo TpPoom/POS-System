@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 import Container from "../components/Container";
 import Footer from "../components/Footer";
 
-export default function loginPage() {
+export default function LoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 

@@ -9,7 +9,7 @@ import { fetchData, handleSort, sortedData, handleSearch } from "@/lib/utils";
 import { FaEdit, FaSearch, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { IoTrashBin } from "react-icons/io5";
 
-const tablesPage = () => {
+const TablesPage = () => {
 	const [tables, setTables] = useState([]);
 	const [searchedTables, setSearchedTables] = useState([]);
 	const [table, setTable] = useState({});
@@ -35,15 +35,9 @@ const tablesPage = () => {
 		setSelectedTable("");
 	}, [tables]);
 
-	const indexOfLastTable = useMemo(() => currentPage * tablesPerPage, [currentPage, tablesPerPage, searchedTables]);
-	const indexOfFirstTable = useMemo(
-		() => indexOfLastTable - tablesPerPage,
-		[indexOfLastTable, tablesPerPage, searchedTables]
-	);
-	const lastPage = useMemo(
-		() => Math.ceil(searchedTables.length / tablesPerPage),
-		[searchedTables, tablesPerPage, searchedTables]
-	);
+	const indexOfLastTable = useMemo(() => currentPage * tablesPerPage, [currentPage, tablesPerPage]);
+	const indexOfFirstTable = useMemo(() => indexOfLastTable - tablesPerPage, [indexOfLastTable, tablesPerPage]);
+	const lastPage = useMemo(() => Math.ceil(searchedTables.length / tablesPerPage), [searchedTables, tablesPerPage]);
 	const currentTables = sortedData(searchedTables, sortConfig).slice(indexOfFirstTable, indexOfLastTable);
 
 	useEffect(() => {
@@ -411,4 +405,4 @@ const tablesPage = () => {
 	);
 };
 
-export default tablesPage;
+export default TablesPage;

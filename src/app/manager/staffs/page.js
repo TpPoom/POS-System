@@ -9,7 +9,7 @@ import { fetchData, handleSort, sortedData, handleSearch } from "@/lib/utils";
 import { FaEdit, FaSearch, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { IoTrashBin } from "react-icons/io5";
 
-const staffsPage = () => {
+const StaffsPage = () => {
 	const [staffs, setStaffs] = useState([]);
 	const [searchedStaffs, setSearchedStaffs] = useState([]);
 	const [staff, setStaff] = useState({});
@@ -38,15 +38,9 @@ const staffsPage = () => {
 		setSelectedStaff("");
 	}, [staffs]);
 
-	const indexOfLastStaff = useMemo(() => currentPage * staffsPerPage, [currentPage, staffsPerPage, searchedStaffs]);
-	const indexOfFirstStaff = useMemo(
-		() => indexOfLastStaff - staffsPerPage,
-		[indexOfLastStaff, staffsPerPage, searchedStaffs]
-	);
-	const lastPage = useMemo(
-		() => Math.ceil(searchedStaffs.length / staffsPerPage),
-		[searchedStaffs, staffsPerPage, searchedStaffs]
-	);
+	const indexOfLastStaff = useMemo(() => currentPage * staffsPerPage, [currentPage, staffsPerPage]);
+	const indexOfFirstStaff = useMemo(() => indexOfLastStaff - staffsPerPage, [indexOfLastStaff, staffsPerPage]);
+	const lastPage = useMemo(() => Math.ceil(searchedStaffs.length / staffsPerPage), [searchedStaffs, staffsPerPage]);
 	const currentstaffs = sortedData(searchedStaffs, sortConfig).slice(indexOfFirstStaff, indexOfLastStaff);
 
 	useEffect(() => {
@@ -479,4 +473,4 @@ const staffsPage = () => {
 	);
 };
 
-export default staffsPage;
+export default StaffsPage;

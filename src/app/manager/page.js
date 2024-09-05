@@ -157,7 +157,7 @@ const DashboardPage = () => {
 			const yearlySalesArray = generateYearlySales();
 			setSales(yearlySalesArray);
 		}
-	}, [bills, selectedMonth, selectedYear, selectedPeriod]);
+	}, [bills, selectedMonth, selectedYear, selectedPeriod, maxMonth]);
 
 	const chartOptions = useMemo(
 		() => ({
@@ -189,8 +189,8 @@ const DashboardPage = () => {
 				selectedPeriod === "Daily"
 					? String(item.day).slice(8, 10)
 					: selectedPeriod === "Monthly"
-						? String(item.month).slice(5, 7)
-						: item.year
+					? String(item.month).slice(5, 7)
+					: item.year
 			),
 			datasets: [
 				{
@@ -307,7 +307,9 @@ const DashboardPage = () => {
 						{["Daily", "Monthly", "Yearly"].map((period) => (
 							<div
 								key={period}
-								className={`flex rounded border-2 text-center w-20 items-center ${period === selectedPeriod ? "border-green-500" : ""}`}
+								className={`flex rounded border-2 text-center w-20 items-center ${
+									period === selectedPeriod ? "border-green-500" : ""
+								}`}
 							>
 								<label htmlFor={period} className="w-full">
 									{period}

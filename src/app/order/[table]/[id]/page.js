@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import io from "socket.io-client";
 
@@ -69,7 +70,7 @@ const OrderPage = ({ params }) => {
 		};
 
 		getData();
-	}, []);
+	}, [params.id, params.table, router]);
 
 	useEffect(() => {
 		setSearchedItems(items);
@@ -178,7 +179,7 @@ const OrderPage = ({ params }) => {
 				console.error(`Error: ${error.message}`);
 			}
 		},
-		[showCart]
+		[billItems, cartItems, params.id, params.table, socket]
 	);
 
 	const billSubmit = useCallback(
@@ -192,7 +193,7 @@ const OrderPage = ({ params }) => {
 
 			socket.emit("sendNotification", "Bill", params.table);
 		},
-		[showBill]
+		[params.table, socket]
 	);
 
 	return (
@@ -237,7 +238,13 @@ const OrderPage = ({ params }) => {
 												item.status === "Out of stock" ? "opacity-50 cursor-not-allowed" : ""
 											}`}
 										>
-											<img src={item.image} alt={item.name} className="h-60 w-60 object-cover" />
+											<Image
+												src={item.image}
+												alt={item.name}
+												width={1000}
+												height={1000}
+												className="h-60 w-60 object-cover"
+											/>
 											<div className="flex w-60 flex-col">
 												<h3 className="font-bold">{item.name}</h3>
 												<p>{item.description}</p>
@@ -257,9 +264,11 @@ const OrderPage = ({ params }) => {
 			</div>
 			{showAddToCart && (
 				<Modal onClose={() => setShowAddToCart(false)}>
-					<img
+					<Image
 						src={selectedItem.image}
 						alt={selectedItem.name}
+						height={1000}
+						width={1000}
 						className="h-60 w-full rounded-t-lg object-cover"
 					/>
 					<form name="detail" className="p-6" onSubmit={addToCart}>
@@ -279,7 +288,9 @@ const OrderPage = ({ params }) => {
 								{Object.keys(selectedItem.size).map((size, index) => (
 									<div
 										key={index}
-										className={`flex flex-col rounded border-2 text-center ${size === selectedSize ? "border-green-500" : ""}`}
+										className={`flex flex-col rounded border-2 text-center ${
+											size === selectedSize ? "border-green-500" : ""
+										}`}
 									>
 										<label htmlFor={`size-${index}`} className="w-full py-1">
 											{size}
@@ -306,7 +317,9 @@ const OrderPage = ({ params }) => {
 								{Object.keys(selectedItem.addOn).map((addOn, index) => (
 									<div
 										key={index}
-										className={`flex flex-col rounded border-2 text-center ${selectedAddOns.includes(addOn) ? "border-green-500" : ""}`}
+										className={`flex flex-col rounded border-2 text-center ${
+											selectedAddOns.includes(addOn) ? "border-green-500" : ""
+										}`}
 									>
 										<label htmlFor={`addon-${index}`} className="w-full py-1">
 											{addOn}

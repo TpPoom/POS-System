@@ -157,7 +157,7 @@ const BillsPage = ({ params }) => {
 		doc.autoPrint();
 		doc.close();
 		document.getElementById("pdf").src = doc.output("datauristring");
-	}, [showHandleBill]);
+	}, [bill.items, bill.table, bill.total]);
 
 	return (
 		<>
@@ -336,7 +336,13 @@ const BillsPage = ({ params }) => {
 												{b.addOn.length > 0 && <span>, {b.addOn.join(", ")}</span>})
 											</td>
 											<td
-												className={`border-2 p-2 text-center font-bold ${b.status === "Pending" ? "text-red-500" : b.status === "Ongoing" ? "text-orange-500" : "text-green-500"}`}
+												className={`border-2 p-2 text-center font-bold ${
+													b.status === "Pending"
+														? "text-red-500"
+														: b.status === "Ongoing"
+														? "text-orange-500"
+														: "text-green-500"
+												}`}
 											>
 												{b.status}
 											</td>

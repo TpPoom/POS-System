@@ -10,7 +10,7 @@ import Modal from "@/components/Modal";
 import { fetchData } from "@/lib/utils";
 import { IoTrashBin } from "react-icons/io5";
 
-const ordersPage = ({ params }) => {
+const OrdersPage = ({ params }) => {
 	const [notifications, setNotifications] = useState([]);
 
 	const [orders, setOrders] = useState([]);
@@ -34,15 +34,15 @@ const ordersPage = ({ params }) => {
 
 	const pendingItems = useMemo(() => {
 		return filteredItems.filter((item) => item.status === "Pending");
-	}, [items, category]);
+	}, [filteredItems]);
 
 	const ongoingItems = useMemo(() => {
 		return filteredItems.filter((item) => item.status === "Ongoing");
-	}, [items, category]);
+	}, [filteredItems]);
 
 	const completedItems = useMemo(() => {
 		return filteredItems.filter((item) => item.status === "Completed");
-	}, [orders, category]);
+	}, [filteredItems]);
 
 	useEffect(() => {
 		const newSocket = io("http://localhost:3000");
@@ -113,7 +113,7 @@ const ordersPage = ({ params }) => {
 				console.error("Error removing item:", error);
 			}
 		},
-		[items, item]
+		[item]
 	);
 
 	const handleAccept = useCallback(
@@ -148,7 +148,7 @@ const ordersPage = ({ params }) => {
 				console.error("Error removing item:", error);
 			}
 		},
-		[items, item]
+		[item]
 	);
 
 	return (
@@ -161,7 +161,9 @@ const ordersPage = ({ params }) => {
 				<div className="flex gap-2">
 					<Link
 						href="/staff/orders/All"
-						className={`flex rounded border-2 text-center px-4 py-2 items-center ${category === "All" ? "border-green-500" : ""}`}
+						className={`flex rounded border-2 text-center px-4 py-2 items-center ${
+							category === "All" ? "border-green-500" : ""
+						}`}
 					>
 						All
 					</Link>
@@ -169,7 +171,9 @@ const ordersPage = ({ params }) => {
 						<Link
 							href={`/staff/orders/${cat}`}
 							key={cat}
-							className={`flex rounded border-2 text-center px-4 py-2 items-center ${cat === category ? "border-green-500" : ""}`}
+							className={`flex rounded border-2 text-center px-4 py-2 items-center ${
+								cat === category ? "border-green-500" : ""
+							}`}
 						>
 							{cat}
 						</Link>
@@ -193,7 +197,13 @@ const ordersPage = ({ params }) => {
 									onClick={() => {
 										setItem(item);
 									}}
-									className={`p-4 m-2 rounded ${status === "Pending" ? "bg-red-100" : status === "Ongoing" ? "bg-orange-100" : "bg-green-100"}`}
+									className={`p-4 m-2 rounded ${
+										status === "Pending"
+											? "bg-red-100"
+											: status === "Ongoing"
+											? "bg-orange-100"
+											: "bg-green-100"
+									}`}
 								>
 									<div className="flex justify-between text-xl font-bold">
 										<h2>{item.name}</h2>
@@ -319,4 +329,4 @@ const ordersPage = ({ params }) => {
 	);
 };
 
-export default ordersPage;
+export default OrdersPage;

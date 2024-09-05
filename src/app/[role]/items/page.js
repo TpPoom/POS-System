@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import Image from "next/image";
 
 import Modal from "@/components/Modal";
 
@@ -9,7 +10,7 @@ import { fetchData, handleSort, sortedData, handleSearch } from "@/lib/utils";
 import { FaEdit, FaSearch, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { IoTrashBin } from "react-icons/io5";
 
-const itemsPage = ({ params }) => {
+const ItemsPage = ({ params }) => {
 	const [items, setItems] = useState([]);
 	const [searchedItems, setSearchedItems] = useState([]);
 	const [item, setItem] = useState({});
@@ -43,15 +44,9 @@ const itemsPage = ({ params }) => {
 		setSelectedItem("");
 	}, [items]);
 
-	const indexOfLastItem = useMemo(() => currentPage * itemsPerPage, [currentPage, itemsPerPage, searchedItems]);
-	const indexOfFirstItem = useMemo(
-		() => indexOfLastItem - itemsPerPage,
-		[indexOfLastItem, itemsPerPage, searchedItems]
-	);
-	const lastPage = useMemo(
-		() => Math.ceil(searchedItems.length / itemsPerPage),
-		[searchedItems, itemsPerPage, searchedItems]
-	);
+	const indexOfLastItem = useMemo(() => currentPage * itemsPerPage, [currentPage, itemsPerPage]);
+	const indexOfFirstItem = useMemo(() => indexOfLastItem - itemsPerPage, [indexOfLastItem, itemsPerPage]);
+	const lastPage = useMemo(() => Math.ceil(searchedItems.length / itemsPerPage), [searchedItems, itemsPerPage]);
 	const currentItems = sortedData(searchedItems, sortConfig).slice(indexOfFirstItem, indexOfLastItem);
 
 	useEffect(() => {
@@ -81,27 +76,21 @@ const itemsPage = ({ params }) => {
 		[]
 	);
 
-	const addSizeField = useCallback(addField(setSizes, { size: "", price: "" }), []);
-	const removeSizeField = useCallback(
-		removeField(setSizes, (sizes) => ({
-			size: sizes.reduce((acc, size) => ({ ...acc, [size.size]: parseFloat(size.price) }), {}),
-		})),
-		[]
-	);
+	const addSizeField = addField(setSizes, { size: "", price: "" });
+	const removeSizeField = removeField(setSizes, (sizes) => ({
+		size: sizes.reduce((acc, size) => ({ ...acc, [size.size]: parseFloat(size.price) }), {}),
+	}));
 
-	const addAddOnField = useCallback(addField(setAddOns, { addOn: "", price: "" }), []);
-	const removeAddOnField = useCallback(
-		removeField(setAddOns, (addOns) => ({
-			addOn: addOns.reduce(
-				(acc, addOn) => ({
-					...acc,
-					[addOn.addOn]: parseFloat(addOn.price),
-				}),
-				{}
-			),
-		})),
-		[]
-	);
+	const addAddOnField = addField(setAddOns, { addOn: "", price: "" });
+	const removeAddOnField = removeField(setAddOns, (addOns) => ({
+		addOn: addOns.reduce(
+			(acc, addOn) => ({
+				...acc,
+				[addOn.addOn]: parseFloat(addOn.price),
+			}),
+			{}
+		),
+	}));
 
 	const renderFields = useCallback(
 		(fields, handleChange, addField, removeField) => (
@@ -144,19 +133,19 @@ const itemsPage = ({ params }) => {
 				</button>
 			</div>
 		),
-		[]
+		[params.role]
 	);
 
-	const handleChange = useCallback((e) => {
+	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setItem((prevItem) => ({ ...prevItem, [name]: value }));
-	}, []);
+	};
 
-	const handleImageChange = useCallback((e) => {
+	const handleImageChange = (e) => {
 		const file = e.target.files[0];
 		setImage(file);
 		setItem((prevItem) => ({ ...prevItem, image: `/uploads/${Date.now()}-${file.name}` }));
-	}, []);
+	};
 
 	const handleFieldChange = useCallback(
 		(setter, reducer) => (index, key, value) => {
@@ -170,19 +159,13 @@ const itemsPage = ({ params }) => {
 		[]
 	);
 
-	const handleSizeChange = useCallback(
-		handleFieldChange(setSizes, (sizes) => ({
-			size: sizes.reduce((acc, size) => ({ ...acc, [size.size]: parseFloat(size.price) }), {}),
-		})),
-		[]
-	);
+	const handleSizeChange = handleFieldChange(setSizes, (sizes) => ({
+		size: sizes.reduce((acc, size) => ({ ...acc, [size.size]: parseFloat(size.price) }), {}),
+	}));
 
-	const handleAddOnChange = useCallback(
-		handleFieldChange(setAddOns, (addOns) => ({
-			addOn: addOns.reduce((acc, addOn) => ({ ...acc, [addOn.addOn]: parseFloat(addOn.price) }), {}),
-		})),
-		[]
-	);
+	const handleAddOnChange = handleFieldChange(setAddOns, (addOns) => ({
+		addOn: addOns.reduce((acc, addOn) => ({ ...acc, [addOn.addOn]: parseFloat(addOn.price) }), {}),
+	}));
 
 	const handleEdit = useCallback((i) => {
 		setItem(i);
@@ -414,7 +397,13 @@ const itemsPage = ({ params }) => {
 							<tr key={item.id}>
 								<td className="w-0 border px-4 py-2 text-center">{item.id}</td>
 								<td className="w-1/6 border px-4 py-2">
-									<img src={item.image} alt={item.name} className="mx-auto max-h-40" />
+									<Image
+										src={item.image}
+										alt={item.name}
+										width={1000}
+										height={1000}
+										className="mx-auto max-h-40"
+									/>
 								</td>
 								<td
 									className={`w-0 border px-4 py-2 text-center font-bold ${
@@ -566,11 +555,19 @@ const itemsPage = ({ params }) => {
 									disabled={params.role === "manager" ? false : true}
 								/>
 								{item.image !== "" && image == null && (
-									<img src={item.image} alt={item.name} className="w-1/3 rounded-r-lg" />
+									<Image
+										width={1000}
+										height={1000}
+										src={item.image}
+										alt={item.name}
+										className="w-1/3 rounded-r-lg"
+									/>
 								)}
 								{image !== null && (
-									<img
+									<Image
 										src={URL.createObjectURL(image)}
+										width={1000}
+										height={1000}
 										alt={image.name}
 										className="w-1/3 rounded-r-lg"
 									/>
@@ -620,7 +617,13 @@ const itemsPage = ({ params }) => {
 							</div>
 						</div>
 						<div className="flex flex-col w-full">
-							<img src={item.image} alt={item.name} className="mx-auto w-1/2 rounded" />
+							<Image
+								src={item.image}
+								width={1000}
+								height={1000}
+								alt={item.name}
+								className="mx-auto w-1/2 rounded"
+							/>
 							<div className="flex mx-auto mt-2">
 								<h2 className="text-lg font-bold">Name:&nbsp;</h2>
 								<p className="text-lg">{item.name}</p>
@@ -646,4 +649,4 @@ const itemsPage = ({ params }) => {
 	);
 };
 
-export default itemsPage;
+export default ItemsPage;

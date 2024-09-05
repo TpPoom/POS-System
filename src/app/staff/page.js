@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import io from "socket.io-client";
+import Image from "next/image";
 
 import Modal from "@/components/Modal";
 import Store from "@/store.json";
@@ -82,10 +83,7 @@ const TabledPage = () => {
 		}
 	};
 
-	const selectedOrder = useMemo(
-		() => orders.find((order) => order.table === table.name) || {},
-		[showHandleOrder, orders, table, notifications]
-	);
+	const selectedOrder = useMemo(() => orders.find((order) => order.table === table.name) || {}, [orders, table]);
 
 	const handleConfirmRemove = useCallback((e, item) => {
 		e.preventDefault();
@@ -171,39 +169,39 @@ const TabledPage = () => {
 		doc.autoPrint();
 		doc.close();
 		document.getElementById("pdf").src = doc.output("datauristring");
-	}, [showHandleOrder, table]);
+	}, [table, id]);
 
 	const tableSubmit = useCallback(
 		async (e) => {
 			e.preventDefault();
-			// setShowHandleTable(false);
+			setShowHandleTable(false);
 
 			try {
-				createTablePDF();
-				// const res = await fetch(`/api/order/${table.name}/${id}`, {
-				// 	method: "POST",
-				// 	headers: {
-				// 		"Content-Type": "application/json",
-				// 	},
-				// });
+				const res = await fetch(`/api/order/${table.name}/${id}`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
 
-				// if (res.ok) {
-				// 	setTables((prevTables) =>
-				// 		prevTables.map((t) => (t.id === table.id ? { ...table, status: "Unavailable" } : t))
-				// 	);
-				// 	setOrders((prevOrders) => [
-				// 		...prevOrders,
-				// 		{ id, items: [], table: table.name, total: 0, status: "Pending" },
-				// 	]);
-				// 	setId(String(parseInt(id) + 1).padStart(6, "0"));
-				// } else {
-				// 	console.error("Failed to save table");
-				// }
+				if (res.ok) {
+					createTablePDF();
+					setTables((prevTables) =>
+						prevTables.map((t) => (t.id === table.id ? { ...table, status: "Unavailable" } : t))
+					);
+					setOrders((prevOrders) => [
+						...prevOrders,
+						{ id, items: [], table: table.name, total: 0, status: "Pending" },
+					]);
+					setId(String(parseInt(id) + 1).padStart(6, "0"));
+				} else {
+					console.error("Failed to save table");
+				}
 			} catch (error) {
 				console.error("Error:", error);
 			}
 		},
-		[showHandleTable]
+		[createTablePDF, id, table]
 	);
 
 	const createBillPDF = useCallback(() => {
@@ -266,7 +264,7 @@ const TabledPage = () => {
 		doc.autoPrint();
 		doc.close();
 		document.getElementById("pdf").src = doc.output("datauristring");
-	}, [showHandleOrder]);
+	}, [selectedOrder.items, selectedOrder.table, selectedOrder.total]);
 
 	const billSubmit = useCallback(
 		async (e) => {
@@ -295,7 +293,7 @@ const TabledPage = () => {
 				console.error("Error:", error);
 			}
 		},
-		[showHandleOrder]
+		[createBillPDF, selectedOrder._id, selectedOrder.id, table]
 	);
 
 	return (
@@ -315,7 +313,9 @@ const TabledPage = () => {
 									if (table.status === "Available") setShowHandleTable(true);
 									else setShowHandleOrder(true);
 								}}
-								className={`flex justify-center py-10 rounded-xl text-5xl cursor-pointer ${table.status === "Available" ? "bg-green-500" : "bg-yellow-500"}`}
+								className={`flex justify-center py-10 rounded-xl text-5xl cursor-pointer ${
+									table.status === "Available" ? "bg-green-500" : "bg-yellow-500"
+								}`}
 							>
 								{table.name}
 							</div>
@@ -332,7 +332,9 @@ const TabledPage = () => {
 								notification.message !== "Order" && (
 									<div
 										key={index}
-										className={`p-4 rounded ${notification.message === "Service" ? "bg-orange-200" : "bg-green-200"}`}
+										className={`p-4 rounded ${
+											notification.message === "Service" ? "bg-orange-200" : "bg-green-200"
+										}`}
 									>
 										<div className="flex justify-between text-xl font-bold">
 											<h2>{notification.message}</h2>
@@ -371,8 +373,10 @@ const TabledPage = () => {
 								<h2>Table: {table.name}</h2>
 								<h3>Size: {table.size}</h3>
 							</div>
-							<img
-								src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://localhost:3000/order/${table.name}/${id}`}
+							<Image
+								src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/order/${table.name}/${id}`}
+								width={150}
+								height={150}
 								alt="qr-code"
 								className="w-1/4"
 							/>
@@ -422,7 +426,13 @@ const TabledPage = () => {
 												{item.addOn.length > 0 && <span>, {item.addOn.join(", ")}</span>})
 											</td>
 											<td
-												className={`border-2 p-2 text-center font-bold ${item.status === "Pending" ? "text-red-500" : item.status === "Ongoing" ? "text-orange-500" : "text-green-500"}`}
+												className={`border-2 p-2 text-center font-bold ${
+													item.status === "Pending"
+														? "text-red-500"
+														: item.status === "Ongoing"
+														? "text-orange-500"
+														: "text-green-500"
+												}`}
 											>
 												{item.status}
 											</td>
