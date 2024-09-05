@@ -1,0 +1,16 @@
+[
+  {
+    "name": "John",
+    "programmingLanguage": [
+      "Python",
+      "JavaScript"
+    ]
+  },
+  {
+    "name": "Alice",
+    "programmingLanguage": [
+      "C++",
+      "JavaScript"
+    ]
+  }
+]
