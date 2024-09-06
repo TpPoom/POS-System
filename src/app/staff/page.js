@@ -158,7 +158,7 @@ const TabledPage = () => {
 		doc.text("_________________________________", leftMargin, yPos);
 		yPos += lineHeight * 2;
 		doc.addImage(
-			`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://localhost:3000/order/${table.name}/${id}`,
+			`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/order/${table.name}/${id}`,
 			"JPG",
 			10,
 			yPos,
